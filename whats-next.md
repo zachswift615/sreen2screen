@@ -1,249 +1,278 @@
 # Screen2Screen Handoff Document
 
-**Date:** 2025-11-27
-**Repository:** git@github.com:zachswift615/sreen2screen.git
+**Date:** 2025-11-28
+**Repository:** /Users/zachswift/projects/screen2screen
 **Branch:** main
-**Latest Commit:** 26a7505 (feat(client): add UIKit gesture overlay for proper touch handling)
 
 ---
 
 <original_task>
-Build a TeamViewer-like remote desktop application with:
-- **macOS Host App** (Swift/AppKit): Menu bar app that captures screen via ScreenCaptureKit, streams H.264 over WebRTC, receives input commands via DataChannel
-- **iOS Client App** (Swift/SwiftUI): Discovers hosts via Bonjour, renders video with Metal, sends gestures/keyboard input over WebRTC DataChannel
-
-Key features requested:
-- Relative cursor movement (drag to move cursor like TeamViewer)
-- Tap to click, two-finger tap for right-click
-- Pinch to zoom (client-side)
-- Special keyboard with modifiers (Cmd/Ctrl/Alt/Shift), F-keys, arrows, navigation keys
-- Auto-discovery via Bonjour on local network
-- Clear path for future cross-network support (TURN/STUN)
-- Monitor selector for multi-display support
-- Audio streaming deferred to future phase
+Continue setting up the Screen2Screen remote desktop application in Xcode and test it. The implementation was already complete from a previous session - this session focused on:
+1. Adding source files to Xcode projects (they existed on disk but weren't in build phases)
+2. Fixing WebRTC framework issues for both macOS and iOS
+3. Getting both apps to build and run
+4. Testing end-to-end functionality
 </original_task>
 
 <work_completed>
-## Design Phase (Complete)
-- **Design Document:** `docs/plans/2025-11-27-screen2screen-design.md`
-  - Full architecture diagrams
-  - Technology choices documented (WebRTC, ScreenCaptureKit, Metal, CGEvent)
-  - Communication protocol defined (length-prefixed JSON over TCP for signaling, WebRTC DataChannel for input)
-  - Future cross-network path documented
+## Xcode Project Setup
 
-- **Implementation Plan:** `docs/plans/2025-11-27-screen2screen-implementation.md`
-  - 20 bite-sized tasks
-  - Code reviewed and fixes applied before execution
+### Source Files Added to Projects
+Used xcodeproj Ruby gem to add missing source files:
 
-## Implementation Phase (Tasks 1-19 Complete)
+**Host App (macOS):**
+- `ScreenToScreenHost/Sources/Services/InputController.swift`
+- `ScreenToScreenHost/Sources/Services/ScreenCaptureService.swift`
+- `ScreenToScreenHost/Sources/Services/SignalingServer.swift`
+- `ScreenToScreenHost/Sources/Services/WebRTCManager.swift`
+- `ScreenToScreenHost/Sources/App/main.swift` (created new - needed for app launch)
 
-### Shared Package (Task 1)
-- `Shared/Package.swift` - Swift Package for shared code
-- `Shared/Sources/Shared/Constants.swift` - Service type, port, frame rate
-- `Shared/Sources/Shared/InputMessage.swift` - Mouse/keyboard message types
-- `Shared/Sources/Shared/SignalingMessage.swift` - WebRTC signaling messages
+**Client App (iOS):**
+- `ScreenToScreenClient/Sources/Services/BonjourBrowser.swift`
+- `ScreenToScreenClient/Sources/Services/SignalingClient.swift`
+- `ScreenToScreenClient/Sources/Services/WebRTCClient.swift`
+- `ScreenToScreenClient/Sources/Views/HostListView.swift`
+- `ScreenToScreenClient/Sources/Views/RemoteSessionView.swift`
+- `ScreenToScreenClient/Sources/Views/SpecialKeyboardView.swift`
+- `ScreenToScreenClient/Sources/Views/VideoRenderView.swift`
+- `ScreenToScreenClient/Sources/Views/GestureOverlayView.swift`
+- `ScreenToScreenClient/Sources/Models/HostInfo.swift`
+- `ScreenToScreenClient/Sources/Gestures/CursorState.swift`
+- `ScreenToScreenClient/Sources/Gestures/GestureController.swift`
 
-### WebRTC Framework (Task 2)
-- `WebRTC/WebRTC.xcframework/` - M141 prebuilt from stasel/WebRTC
-- Supports: iOS arm64, iOS Simulator (x86_64 + arm64), macOS (x86_64 + arm64), Mac Catalyst
+### Workspace Created
+- Created `Screen2Screen.xcworkspace` at `/Users/zachswift/projects/screen2screen/Screen2Screen.xcworkspace/contents.xcworkspacedata`
+- Contains both projects and the Shared package to avoid "already opened" conflicts
 
-### macOS Host App (Tasks 3-9)
-- `ScreenToScreenHost/ScreenToScreenHost.xcodeproj/` - Created via xcodeproj gem
-- `ScreenToScreenHost/Sources/App/AppDelegate.swift` - Menu bar app, wires all services
-- `ScreenToScreenHost/Sources/App/ScreenToScreenHost.entitlements` - Network permissions, sandbox disabled
-- `ScreenToScreenHost/Resources/Info.plist` - LSUIElement=YES, screen capture description
-- `ScreenToScreenHost/Sources/Services/SignalingServer.swift` - TCP server with integrated Bonjour advertising
-- `ScreenToScreenHost/Sources/Services/ScreenCaptureService.swift` - SCStream capture with display selector
-- `ScreenToScreenHost/Sources/Services/InputController.swift` - CGEvent injection for mouse/keyboard
-- `ScreenToScreenHost/Sources/Services/WebRTCManager.swift` - Video streaming, DataChannel reception
+### macOS Host App Fixes
+1. **Entry Point Fix:** Created `main.swift` with explicit `NSApplication` setup - the `@main` attribute on AppDelegate wasn't launching the app
+2. **Info.plist:** Added `NSPrincipalClass` = `NSApplication`
+3. **Framework Search Paths:** Added `$(PROJECT_DIR)/../WebRTC` to Debug configuration (was only in Release)
+4. **Imports:** Added missing `import WebRTC` to AppDelegate.swift, `import AppKit` to InputController.swift
+5. **Type Fix:** Cast `CGFloat` to `Double` in ScreenCaptureService.swift line 82
 
-### iOS Client App (Tasks 10-19)
-- `ScreenToScreenClient/ScreenToScreenClient.xcodeproj/` - Created via xcodeproj gem
-- `ScreenToScreenClient/Sources/App/ScreenToScreenApp.swift` - SwiftUI entry point
-- `ScreenToScreenClient/Resources/Info.plist` - Bonjour services, local network permission
-- `ScreenToScreenClient/Sources/Models/HostInfo.swift` - Discovered host model
-- `ScreenToScreenClient/Sources/Services/BonjourBrowser.swift` - NWBrowser-based discovery
-- `ScreenToScreenClient/Sources/Services/SignalingClient.swift` - TCP client for signaling
-- `ScreenToScreenClient/Sources/Services/WebRTCClient.swift` - Video receiving, input sending
-- `ScreenToScreenClient/Sources/Views/VideoRenderView.swift` - RTCMTLVideoView wrapper
-- `ScreenToScreenClient/Sources/Views/HostListView.swift` - Discovery UI with host list
-- `ScreenToScreenClient/Sources/Views/RemoteSessionView.swift` - Main session view + ViewModel
-- `ScreenToScreenClient/Sources/Views/SpecialKeyboardView.swift` - F-keys, modifiers, arrows
-- `ScreenToScreenClient/Sources/Views/GestureOverlayView.swift` - UIKit gesture integration
-- `ScreenToScreenClient/Sources/Gestures/CursorState.swift` - Modifier key state
-- `ScreenToScreenClient/Sources/Gestures/GestureController.swift` - Pan, tap, pinch handlers
+### iOS Client App Fixes
+1. **Deployment Target:** Changed from iOS 15.0 to iOS 16.0 (NavigationStack requires iOS 16)
+2. **Info.plist:** Added `CFBundleExecutable` = `$(EXECUTABLE_NAME)`
+3. **Info.plist:** Fixed Resources build phase (removed Info.plist from Resources - was causing duplicate)
+4. **Project File Paths:** Fixed doubled-up paths in project.pbxproj (e.g., `Sources/Views/Sources/Views/` → just filename)
+5. **Bonjour Service Type:** Fixed mismatch - Constants.swift had `_screencast._tcp`, now `_screen2screen._tcp`
 
-## Git History (18 commits)
-```
-26a7505 feat(client): add UIKit gesture overlay for proper touch handling
-9569c7b feat(client): add remote session view with video, gestures, and keyboard
-8295c11 feat(client): add host list view with Bonjour discovery
-3b99c9a feat(client): add special keyboard view with modifiers and F-keys
-15bd638 feat(client): add gesture controller for mouse and keyboard input
-d472e8d feat(client): add Metal-backed video render view
-1e321e8 feat(client): add WebRTC client for video receiving and input sending
-c87107d feat(client): add signaling client for WebRTC negotiation
-047930b feat(client): add Bonjour browser for host discovery
-ad70385 feat: create iOS client Xcode project skeleton
-69136a0 feat(host): wire up all services in AppDelegate
-ed5965f feat(host): add WebRTC manager for video streaming and data channel
-e816a32 feat(host): add CGEvent-based input controller
-156819d feat(host): add ScreenCaptureKit service with display selection
-80dac8c feat: implement SignalingServer with integrated Bonjour advertising
-e29aff6 feat: create macOS host Xcode project skeleton
-ec4dacc Add WebRTC M141 xcframework
-188fc3c feat: add shared Swift package with message types
-```
+### WebRTC Framework Issues
+**Problem:** The stasel/WebRTC M141 xcframework has broken macOS headers - only 1 header file in macOS slice vs 93 in iOS.
 
-All changes pushed to GitHub.
+**Attempts Made:**
+1. Copied iOS headers to macOS slice - failed (iOS-only APIs like AVAudioSession, UIView)
+2. Copied Mac Catalyst headers - failed (wrong import paths `sdk/objc/base/`)
+3. Fixed import paths with sed - headers still had issues
+4. Tried SPM package - same broken macOS slice
+5. Downloaded tmthecoder/WebRTC-macOS (2021 build) - works for macOS but crashes at runtime
+
+**Current Working Setup:**
+- **macOS Host:** Uses `WebRTC.framework` from tmthecoder/WebRTC-macOS (April 2021, version 8324)
+  - Location: `/Users/zachswift/projects/screen2screen/WebRTC/WebRTC.framework`
+  - Added via Framework Search Paths, not xcframework
+- **iOS Client:** Uses `WebRTC.xcframework` from stasel/WebRTC M141
+  - Location: `/Users/zachswift/projects/screen2screen/WebRTC/WebRTC.xcframework`
+  - iOS headers fixed with: `sed -i '' 's/#import "sdk\/objc\/base\/\([^"]*\)"/#import <WebRTC\/\1>/g' *.h`
+  - Applied to both `ios-arm64` and `ios-x86_64_arm64-simulator` slices
+
+### Code Changes for Older macOS WebRTC API
+In `WebRTCManager.swift`:
+1. Removed completion handler from `peerConnection?.add(iceCandidate)` - older API doesn't have it
+2. Created `ScreenCapturer` class extending `RTCVideoCapturer` to inject frames
+3. Changed video frame injection to use custom capturer instead of `videoSource.delegate`
+4. Added frame throttling and pixel buffer locking (didn't fix crash)
+
+### VideoRenderView.swift Fix (iOS)
+Added Coordinator pattern to prevent adding video track multiple times:
+- Tracks current track in coordinator
+- Only adds track if not already added
+- Properly removes track on dismantle
+
+## Testing Results
+**SUCCESS:** Both apps build and run. Connection established. Video streaming works initially - saw Mac screen on iPhone!
+
+**CRASH:** After a few seconds of streaming, the macOS Host app crashes in WebRTC's video encoder:
+- Thread: EncoderQueue (serial)
+- Location: `CVPixelBufferPoolGetPixelBufferAttributes` → `CF_IS_OBJC` → `objc_msgSend`
+- Error: `EXC_BREAKPOINT` or `EXC_BAD_ACCESS`
+- Root Cause: The 2021 macOS WebRTC framework is incompatible with modern ScreenCaptureKit pixel buffer formats
 </work_completed>
 
 <work_remaining>
-## Task 20: End-to-End Testing (NOT STARTED)
+## Primary Task: Switch to LiveKit's WebRTC XCFramework
 
-### Pre-requisites (User must do in Xcode)
-1. **Open both Xcode projects** and configure:
-   - Add `Shared` package as local dependency to both projects
-   - Add `WebRTC.xcframework` to both projects (embed & sign)
-   - Set development team for signing
-   - For macOS: May need to enable "Hardened Runtime" or adjust entitlements
+The tmthecoder/WebRTC-macOS framework (2021) crashes when encoding ScreenCaptureKit pixel buffers. Need to switch to LiveKit's actively maintained WebRTC build.
 
-2. **macOS Host Setup:**
-   - Build and run `ScreenToScreenHost`
-   - Grant Screen Recording permission when prompted (System Preferences > Privacy > Screen Recording)
-   - Verify menu bar icon appears with "Ready - Waiting for connection" status
+### Step 1: Download LiveKit WebRTC
+```bash
+cd /Users/zachswift/projects/screen2screen/WebRTC
+# Remove old frameworks
+rm -rf WebRTC.framework WebRTC.xcframework
+# Download LiveKit's build (check releases for latest)
+curl -L -o LiveKitWebRTC.xcframework.zip "https://github.com/livekit/webrtc-xcframework/releases/download/VERSION/LiveKitWebRTC.xcframework.zip"
+unzip LiveKitWebRTC.xcframework.zip
+```
 
-3. **iOS Client Setup:**
-   - Build and run `ScreenToScreenClient` on physical device (same network as Mac)
-   - Grant Local Network permission when prompted
+### Step 2: Update All Code References
+LiveKit prefixes all symbols with `LK`. Find and replace in ALL Swift files:
 
-### Testing Steps
-1. **Discovery Test:**
-   - Verify iOS app shows Mac in host list
-   - Tap to connect
+**Host App files to update:**
+- `ScreenToScreenHost/Sources/Services/WebRTCManager.swift`
+- `ScreenToScreenHost/Sources/App/AppDelegate.swift`
 
-2. **Video Streaming Test:**
-   - Verify video stream appears on iOS
-   - Check latency is acceptable
+**Client App files to update:**
+- `ScreenToScreenClient/Sources/Services/WebRTCClient.swift`
+- `ScreenToScreenClient/Sources/Views/VideoRenderView.swift`
 
-3. **Gesture Tests:**
-   - Drag finger → cursor moves on Mac (relative movement)
-   - Single tap → left click
-   - Double tap → double click
-   - Two-finger tap → right click
-   - Two-finger drag → scroll
-   - Pinch → zoom (client-side only)
+**Symbol replacements needed:**
+| Old Symbol | New Symbol |
+|------------|------------|
+| `import WebRTC` | `import LiveKitWebRTC` |
+| `RTCPeerConnection` | `LKRTCPeerConnection` |
+| `RTCPeerConnectionFactory` | `LKRTCPeerConnectionFactory` |
+| `RTCPeerConnectionDelegate` | `LKRTCPeerConnectionDelegate` |
+| `RTCSessionDescription` | `LKRTCSessionDescription` |
+| `RTCIceCandidate` | `LKRTCIceCandidate` |
+| `RTCIceServer` | `LKRTCIceServer` |
+| `RTCConfiguration` | `LKRTCConfiguration` |
+| `RTCMediaConstraints` | `LKRTCMediaConstraints` |
+| `RTCVideoTrack` | `LKRTCVideoTrack` |
+| `RTCVideoSource` | `LKRTCVideoSource` |
+| `RTCVideoCapturer` | `LKRTCVideoCapturer` |
+| `RTCVideoFrame` | `LKRTCVideoFrame` |
+| `RTCCVPixelBuffer` | `LKRTCCVPixelBuffer` |
+| `RTCDataChannel` | `LKRTCDataChannel` |
+| `RTCDataChannelDelegate` | `LKRTCDataChannelDelegate` |
+| `RTCDataBuffer` | `LKRTCDataBuffer` |
+| `RTCDataChannelConfiguration` | `LKRTCDataChannelConfiguration` |
+| `RTCDefaultVideoEncoderFactory` | `LKRTCDefaultVideoEncoderFactory` |
+| `RTCDefaultVideoDecoderFactory` | `LKRTCDefaultVideoDecoderFactory` |
+| `RTCMTLVideoView` | `LKRTCMTLVideoView` |
+| `RTCSignalingState` | `LKRTCSignalingState` |
+| `RTCIceConnectionState` | `LKRTCIceConnectionState` |
+| `RTCIceGatheringState` | `LKRTCIceGatheringState` |
+| `RTCMediaStream` | `LKRTCMediaStream` |
+| `RTCInitializeSSL()` | `LKRTCInitializeSSL()` |
+| `RTCCleanupSSL()` | `LKRTCCleanupSSL()` |
 
-4. **Keyboard Tests:**
-   - Tap keyboard icon to show special keyboard
-   - Test modifier toggles (Cmd, Ctrl, Alt, Shift)
-   - Test F-keys (F1-F12)
-   - Test arrow keys
-   - Test navigation keys (Home, End, PgUp, PgDn)
-   - Test text input via keyboard button
+### Step 3: Update Xcode Projects
+1. Remove old WebRTC framework references from both projects
+2. Add `LiveKitWebRTC.xcframework` to both projects (Embed & Sign)
+3. May need to update Framework Search Paths
 
-5. **Multi-Monitor Test:**
-   - If multiple displays, test display selector in menu bar
+### Step 4: Test End-to-End
+1. Build and run Host app
+2. Build and run Client app on physical iOS device
+3. Test video streaming stability
+4. Test gesture input (tap, drag, pinch)
+5. Test keyboard input
 
-### Known Issues to Watch For
-- WebRTC video source delegate pattern may need adjustment if video doesn't display
-- Coordinate system differences if cursor movement seems inverted
-- Screen scale factor issues on non-Retina displays
-
-### After Testing
-- Document any bugs found
-- Create GitHub issues for fixes needed
-- If all tests pass, project is ready for use
+### Step 5: Fix Any API Differences
+LiveKit's build may have slightly different APIs. Watch for:
+- Completion handler differences
+- Method signature changes
+- Property name changes
 </work_remaining>
 
 <attempted_approaches>
-## Code Review Fixes Applied
-The implementation plan was reviewed before execution and these issues were identified and fixed:
+## WebRTC Framework Attempts (All Failed for macOS)
 
-1. **WebRTC Video Source (FIXED):** Original code created new `RTCVideoCapturer()` on every frame. Fixed to use `videoSource.delegate?.capturer?()` pattern.
+### 1. stasel/WebRTC M141 XCFramework (SPM and Manual)
+- **Problem:** macOS slice has only 1 header file (WebRTC.h) that references 93 other headers that don't exist
+- **Error:** `'WebRTC/RTCAudioSource.h' file not found`
 
-2. **Coordinate System (FIXED):** Original InputController flipped Y coordinates incorrectly. Fixed to use CGEvent consistently without coordinate transformation.
+### 2. Copying iOS Headers to macOS Slice
+- **Problem:** iOS headers reference iOS-only APIs
+- **Error:** `'AVAudioSession' is unavailable: not available on macOS`, `Cannot find interface declaration for 'UIView'`
 
-3. **Port Conflict (FIXED):** Original design had separate BonjourAdvertiser and SignalingServer both trying to listen on port 8080. Fixed by integrating Bonjour advertising into SignalingServer via `listener.service`.
+### 3. Copying Mac Catalyst Headers to macOS Slice
+- **Problem:** Headers use wrong import paths
+- **Error:** `'sdk/objc/base/RTCMacros.h' file not found`
 
-4. **GestureOverlayView (FIXED):** Was missing from RemoteSessionView. Added to ZStack with proper hit testing.
+### 4. Fixing Import Paths with sed
+- **Command:** `sed -i '' 's/#import "sdk\/objc\/base\/\([^"]*\)"/#import <WebRTC\/\1>/g' *.h`
+- **Problem:** First attempt corrupted headers (missing closing `>`), second attempt worked but headers still had issues
+- **Note:** This DID work for iOS slices
 
-5. **Display Scale (FIXED):** Was hardcoded as 2.0. Fixed to use `NSScreen.main?.backingScaleFactor`.
+### 5. tmthecoder/WebRTC-macOS (2021 Build)
+- **Status:** BUILDS AND RUNS but crashes during video encoding
+- **Crash:** `EXC_BREAKPOINT` in `CVPixelBufferPoolGetPixelBufferAttributes` → `CF_IS_OBJC`
+- **Root Cause:** 2021 framework incompatible with modern ScreenCaptureKit CVPixelBuffer formats
+- **Attempts to fix crash:**
+  - Added frame throttling (~30fps) - didn't help
+  - Added CVPixelBuffer locking - didn't help
+  - Tried async dispatch - couldn't use (CVPixelBufferRetain unavailable in Swift)
 
-6. **Force Unwrap (FIXED):** BonjourBrowser had `self!` - fixed to `guard let self = self`.
-
-7. **Import Location (FIXED):** ScreenCaptureKit import was at end of file - moved to top.
-
-## WebRTC Source Selection
-- Original plan referenced `nicothin/nicothin-webrtc-build` - repo not found (404)
-- Successfully used `stasel/WebRTC` M141 release instead
+### 6. nicothin/nicothin-webrtc-build
+- **Status:** Repository doesn't exist (404)
+- **Note:** Was in original implementation plan
 </attempted_approaches>
 
 <critical_context>
-## Architecture Decisions
+## Architecture Overview
+- **macOS Host App:** Menu bar app using ScreenCaptureKit for capture, WebRTC for streaming
+- **iOS Client App:** SwiftUI app using Bonjour for discovery, WebRTC for receiving video
+- **Signaling:** Custom length-prefixed JSON over TCP (not WebSocket)
+- **Input:** JSON over WebRTC DataChannel
 
-1. **WebRTC for Streaming:** Chosen over simpler MJPEG for performance and future cross-network support. Hardware H.264 encoding via VideoToolbox.
+## Key Files
+| File | Purpose |
+|------|---------|
+| `ScreenToScreenHost/Sources/Services/WebRTCManager.swift` | WebRTC setup, video frame injection |
+| `ScreenToScreenHost/Sources/Services/ScreenCaptureService.swift` | ScreenCaptureKit wrapper |
+| `ScreenToScreenHost/Sources/App/main.swift` | App entry point (required!) |
+| `ScreenToScreenClient/Sources/Services/WebRTCClient.swift` | WebRTC client setup |
+| `ScreenToScreenClient/Sources/Views/VideoRenderView.swift` | RTCMTLVideoView wrapper |
+| `Shared/Sources/Shared/Constants.swift` | Bonjour service type, port |
 
-2. **Length-Prefixed TCP for Signaling:** Not actual WebSocket - simpler custom protocol with 4-byte big-endian length prefix + JSON body.
+## Important Details
+1. **Bonjour Service Type:** `_screen2screen._tcp` (must match in Constants.swift and both Info.plist files)
+2. **Port:** 8080 for signaling
+3. **macOS Host uses main.swift:** The `@main` attribute on AppDelegate didn't work - needed explicit NSApplication setup
+4. **iOS Deployment Target:** iOS 16.0 (NavigationStack requirement)
+5. **Video Frame Injection:** Uses custom `ScreenCapturer` class that extends `RTCVideoCapturer`
 
-3. **Bonjour Service Type:** `_screencast._tcp` on port 8080
+## LiveKit WebRTC Notes
+- GitHub: https://github.com/livekit/webrtc-xcframework
+- All symbols prefixed with `LK` (e.g., `LKRTCPeerConnection`)
+- Supports: iOS 13+, macOS 10.15+, Mac Catalyst 14.0+, visionOS 2.2+, tvOS 17.0+
+- Actively maintained with recent releases
 
-4. **Input Protocol:** JSON over WebRTC DataChannel:
-   - `mouseMove` with dx/dy (relative, not absolute)
-   - `click` with button and count
-   - `keyPress`/`keyDown`/`keyUp` with keyCode and modifiers array
-   - `text` for bulk text input
-
-5. **macOS Key Codes:** F-keys use non-sequential codes (F1=122, F2=120, etc.)
-
-## Important Files
-- **Design Doc:** `docs/plans/2025-11-27-screen2screen-design.md`
-- **Implementation Plan:** `docs/plans/2025-11-27-screen2screen-implementation.md`
-- Both contain complete architecture details and future roadmap
-
-## Future Phases (Documented in Design)
-- **Cross-Network:** Add STUN/TURN servers, external signaling server, device pairing
-- **Audio:** Add audio track via ScreenCaptureKit's `capturesAudio` + RTCAudioTrack
-
-## Requirements
-- macOS 12.3+ (ScreenCaptureKit requirement)
-- iOS 15.0+
-- Xcode 15+
-- Same local network for host and client
+## Environment
+- macOS 23.6.0 (Sonoma)
+- Xcode 16.2
+- iOS target device required (not simulator) for full testing
+- Both devices must be on same WiFi network
 </critical_context>
 
 <current_state>
-## Completion Status
-- **Tasks 1-19:** COMPLETE (all code written and committed)
-- **Task 20 (E2E Testing):** NOT STARTED
+## Build Status
+- **macOS Host App:** BUILDS AND RUNS (but crashes during video streaming)
+- **iOS Client App:** BUILDS AND RUNS SUCCESSFULLY
+- **Workspace:** `Screen2Screen.xcworkspace` - use this to open both projects
 
-## What's Finalized
-- All source code files written per implementation plan
-- All commits pushed to GitHub remote
-- Design and implementation documentation complete
+## What Works
+- Both apps launch successfully
+- Bonjour discovery works (iOS finds Mac)
+- TCP signaling connection establishes
+- WebRTC connection negotiates successfully
+- Video track is received on iOS
+- Initial video frames display on iOS (saw Mac screen!)
+- Data channel opens for input
 
-## What Needs User Intervention
-1. **Xcode Project Configuration:**
-   - Both projects were created via xcodeproj gem
-   - User needs to open in Xcode and:
-     - Add Shared package dependency
-     - Add WebRTC.xcframework (embed & sign)
-     - Set development team
-     - Potentially adjust build settings
+## What's Broken
+- Video streaming crashes after a few seconds
+- Crash is in macOS Host app's WebRTC encoder
+- Root cause: Old WebRTC framework incompatible with ScreenCaptureKit pixel buffers
 
-2. **Testing:**
-   - Run macOS host app
-   - Grant screen recording permission
-   - Run iOS client on physical device
-   - Test all features per Task 20
+## Uncommitted Changes
+Multiple files have been modified during debugging. Key changes:
+- `WebRTCManager.swift`: Frame throttling, pixel buffer locking, ScreenCapturer class
+- `VideoRenderView.swift`: Coordinator pattern for track management
+- Various Info.plist and project.pbxproj fixes
 
-## Open Questions
-- Will the xcodeproj-generated projects build correctly, or need manual Xcode adjustments?
-- Does WebRTC M141 work correctly with the delegate pattern used for video frames?
-- Any Swift 6 concurrency issues with the nonisolated delegate methods?
-
-## Repository State
-- Clean working tree
-- All changes committed and pushed
-- Ready for Xcode build and testing
+## Next Action
+Switch to LiveKit's WebRTC xcframework and update all symbol references from `RTC*` to `LKRTC*`
 </current_state>

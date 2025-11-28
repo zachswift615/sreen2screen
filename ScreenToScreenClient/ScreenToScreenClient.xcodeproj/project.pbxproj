@@ -3,22 +3,59 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		15D7D69BF8B2FDA4724B641E /* GestureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CAC2A9CD4B0FEA70ACBFD3 /* GestureController.swift */; };
+		4171B8789A6517AE67F1DB2E /* SignalingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73196B6425C747C3799A8A02 /* SignalingClient.swift */; };
+		4FB7E619D21979BE11019ACE /* CursorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7F68C6E73EC4DA568FB4D2 /* CursorState.swift */; };
+		506F057F1C7FE305EF8FDE00 /* HostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08481B818166A534DA1B52F5 /* HostInfo.swift */; };
+		8763CD3E4EF268DE5D5AB5B7 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91ACCF01E80164347694C24B /* BonjourBrowser.swift */; };
+		94FA90AA39622B435E23C96F /* VideoRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1771FF41114070B597A4C8 /* VideoRenderView.swift */; };
 		98F092F4C992BAC21B6585DB /* HostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090490B2A8840AC0655C807A /* HostListView.swift */; };
-		C73903FCE86508414E2D9961 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 17B46F569E6F8623B5F9AE93 /* Info.plist */; };
+		99C31AA77EDFCC236F6F9419 /* WebRTCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF0F7330D21B903B818C208 /* WebRTCClient.swift */; };
+		9D2CF37127ABA582DE657038 /* RemoteSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05659187A6C806C2448CD6F8 /* RemoteSessionView.swift */; };
+		A185FDE394FB14FD8393EDDB /* SpecialKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D55A72893E4860DB9F1746 /* SpecialKeyboardView.swift */; };
+		A628FFBF2ED9492B00B3862B /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = A628FFBE2ED9492B00B3862B /* Shared */; };
+		A6619DDD2ED9DB28009AC307 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A628FFC02ED9496E00B3862B /* WebRTC.xcframework */; };
+		A6619DDE2ED9DB28009AC307 /* WebRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A628FFC02ED9496E00B3862B /* WebRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AEF095F8AB1446B7FF0C6F06 /* GestureOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAE286593A9EDF755C8A70C /* GestureOverlayView.swift */; };
 		CA32F58E2781BC2B20EF5E20 /* ScreenToScreenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */; };
 		CC91DA4F1555CB7BA6FB3A85 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 330B77CEDCD0A9B6AADE8DC6 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A6619DDF2ED9DB28009AC307 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A6619DDE2ED9DB28009AC307 /* WebRTC.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		090490B2A8840AC0655C807A /* HostListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HostListView.swift; path = Views/HostListView.swift; sourceTree = "<group>"; };
+		05659187A6C806C2448CD6F8 /* RemoteSessionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoteSessionView.swift; sourceTree = "<group>"; };
+		08481B818166A534DA1B52F5 /* HostInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HostInfo.swift; sourceTree = "<group>"; };
+		090490B2A8840AC0655C807A /* HostListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HostListView.swift; sourceTree = "<group>"; };
 		17B46F569E6F8623B5F9AE93 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
+		1BAE286593A9EDF755C8A70C /* GestureOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GestureOverlayView.swift; sourceTree = "<group>"; };
+		2FF0F7330D21B903B818C208 /* WebRTCClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebRTCClient.swift; sourceTree = "<group>"; };
 		330B77CEDCD0A9B6AADE8DC6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		4E7F68C6E73EC4DA568FB4D2 /* CursorState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CursorState.swift; sourceTree = "<group>"; };
 		697F9EE4A50D5FD74A294975 /* ScreenToScreenClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenToScreenClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenToScreenApp.swift; path = App/ScreenToScreenApp.swift; sourceTree = "<group>"; };
+		73196B6425C747C3799A8A02 /* SignalingClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignalingClient.swift; sourceTree = "<group>"; };
+		75D55A72893E4860DB9F1746 /* SpecialKeyboardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpecialKeyboardView.swift; sourceTree = "<group>"; };
+		7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenToScreenApp.swift; sourceTree = "<group>"; };
+		91ACCF01E80164347694C24B /* BonjourBrowser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BonjourBrowser.swift; sourceTree = "<group>"; };
+		A628FFC02ED9496E00B3862B /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = ../WebRTC/WebRTC.xcframework; sourceTree = "<group>"; };
+		B9CAC2A9CD4B0FEA70ACBFD3 /* GestureController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GestureController.swift; sourceTree = "<group>"; };
+		CC1771FF41114070B597A4C8 /* VideoRenderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoRenderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +64,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC91DA4F1555CB7BA6FB3A85 /* Foundation.framework in Frameworks */,
+				A628FFBF2ED9492B00B3862B /* Shared in Frameworks */,
+				A6619DDD2ED9DB28009AC307 /* WebRTC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -36,6 +75,7 @@
 		0913E38434C7D11398529A6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A628FFC02ED9496E00B3862B /* WebRTC.xcframework */,
 				36586C8B9B0F60E627A6B4AD /* iOS */,
 			);
 			name = Frameworks;
@@ -52,8 +92,9 @@
 		1CB88B725C4DB51959578D00 /* Gestures */ = {
 			isa = PBXGroup;
 			children = (
+				4E7F68C6E73EC4DA568FB4D2 /* CursorState.swift */,
+				B9CAC2A9CD4B0FEA70ACBFD3 /* GestureController.swift */,
 			);
-			name = Gestures;
 			path = Gestures;
 			sourceTree = "<group>";
 		};
@@ -84,7 +125,6 @@
 				1CB88B725C4DB51959578D00 /* Gestures */,
 				DF85B2C568EA104F9ED8FFBA /* Models */,
 			);
-			name = Sources;
 			path = Sources;
 			sourceTree = "<group>";
 		};
@@ -93,15 +133,16 @@
 			children = (
 				7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */,
 			);
-			name = App;
 			path = App;
 			sourceTree = "<group>";
 		};
 		A67AFD0CC0589BA06F46D5B5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				91ACCF01E80164347694C24B /* BonjourBrowser.swift */,
+				73196B6425C747C3799A8A02 /* SignalingClient.swift */,
+				2FF0F7330D21B903B818C208 /* WebRTCClient.swift */,
 			);
-			name = Services;
 			path = Services;
 			sourceTree = "<group>";
 		};
@@ -111,14 +152,13 @@
 				17B46F569E6F8623B5F9AE93 /* Info.plist */,
 			);
 			name = Resources;
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		DF85B2C568EA104F9ED8FFBA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				08481B818166A534DA1B52F5 /* HostInfo.swift */,
 			);
-			name = Models;
 			path = Models;
 			sourceTree = "<group>";
 		};
@@ -126,8 +166,11 @@
 			isa = PBXGroup;
 			children = (
 				090490B2A8840AC0655C807A /* HostListView.swift */,
+				05659187A6C806C2448CD6F8 /* RemoteSessionView.swift */,
+				75D55A72893E4860DB9F1746 /* SpecialKeyboardView.swift */,
+				CC1771FF41114070B597A4C8 /* VideoRenderView.swift */,
+				1BAE286593A9EDF755C8A70C /* GestureOverlayView.swift */,
 			);
-			name = Views;
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -141,6 +184,7 @@
 				7D791492F2EF406413382772 /* Sources */,
 				B2F3BBD3D614EFA86B08DD64 /* Frameworks */,
 				33D35F2D0D9B624A091534F1 /* Resources */,
+				A6619DDF2ED9DB28009AC307 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -169,8 +213,9 @@
 				Base,
 			);
 			mainGroup = 8C5C73626FBB788C3A79086B;
-			minimizedProjectReferenceProxies = 0;
-			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "../Shared" */,
+			);
 			productRefGroup = 095DF1BBFF713B62F1F1FEE8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -185,7 +230,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C73903FCE86508414E2D9961 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +242,16 @@
 			files = (
 				CA32F58E2781BC2B20EF5E20 /* ScreenToScreenApp.swift in Sources */,
 				98F092F4C992BAC21B6585DB /* HostListView.swift in Sources */,
+				8763CD3E4EF268DE5D5AB5B7 /* BonjourBrowser.swift in Sources */,
+				4171B8789A6517AE67F1DB2E /* SignalingClient.swift in Sources */,
+				99C31AA77EDFCC236F6F9419 /* WebRTCClient.swift in Sources */,
+				9D2CF37127ABA582DE657038 /* RemoteSessionView.swift in Sources */,
+				A185FDE394FB14FD8393EDDB /* SpecialKeyboardView.swift in Sources */,
+				94FA90AA39622B435E23C96F /* VideoRenderView.swift in Sources */,
+				AEF095F8AB1446B7FF0C6F06 /* GestureOverlayView.swift in Sources */,
+				506F057F1C7FE305EF8FDE00 /* HostInfo.swift in Sources */,
+				4FB7E619D21979BE11019ACE /* CursorState.swift in Sources */,
+				15D7D69BF8B2FDA4724B641E /* GestureController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,12 +266,15 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2DM29VZ8ED;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.screen2screen.client;
 				PRODUCT_NAME = ScreenToScreenClient;
@@ -351,12 +408,15 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2DM29VZ8ED;
 				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.screen2screen.client;
 				PRODUCT_NAME = ScreenToScreenClient;
@@ -388,6 +448,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "../Shared" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Shared;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A628FFBE2ED9492B00B3862B /* Shared */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Shared;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4ECAB8155DC9250429ED15D3 /* Project object */;
 }

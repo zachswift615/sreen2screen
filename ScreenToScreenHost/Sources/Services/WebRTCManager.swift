@@ -1,6 +1,7 @@
 import Foundation
 import WebRTC
 import Shared
+import CoreMedia
 
 protocol WebRTCManagerDelegate: AnyObject {
     func webRTCManager(_ manager: WebRTCManager, didGenerateAnswer sdp: String)
@@ -8,6 +9,13 @@ protocol WebRTCManagerDelegate: AnyObject {
     func webRTCManager(_ manager: WebRTCManager, didReceiveInputMessage message: InputMessage)
     func webRTCManagerDidConnect(_ manager: WebRTCManager)
     func webRTCManagerDidDisconnect(_ manager: WebRTCManager)
+}
+
+// Custom video capturer to inject frames into WebRTC
+final class ScreenCapturer: RTCVideoCapturer {
+    func captureFrame(_ frame: RTCVideoFrame) {
+        self.delegate?.capturer(self, didCapture: frame)
+    }
 }
 
 final class WebRTCManager: NSObject {
@@ -18,6 +26,7 @@ final class WebRTCManager: NSObject {
     private var dataChannel: RTCDataChannel?
     private var videoSource: RTCVideoSource?
     private var videoTrack: RTCVideoTrack?
+    private var videoCapturer: ScreenCapturer?
 
     private let decoder = JSONDecoder()
 
@@ -50,6 +59,7 @@ final class WebRTCManager: NSObject {
 
     private func setupVideoTrack() {
         videoSource = factory.videoSource()
+        videoCapturer = ScreenCapturer(delegate: videoSource!)
         videoSource?.adaptOutputFormat(toWidth: 1920, height: 1080, fps: 30)
         videoTrack = factory.videoTrack(with: videoSource!, trackId: "screen0")
 
@@ -92,15 +102,21 @@ final class WebRTCManager: NSObject {
 
     func handleIceCandidate(candidate: String, sdpMLineIndex: Int32, sdpMid: String?) {
         let iceCandidate = RTCIceCandidate(sdp: candidate, sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
-        peerConnection?.add(iceCandidate) { error in
-            if let error = error {
-                print("Failed to add ICE candidate: \(error)")
-            }
-        }
+        peerConnection?.add(iceCandidate)
     }
 
+    private var lastFrameTime: Int64 = 0
+
     func sendVideoFrame(_ pixelBuffer: CVPixelBuffer, timestamp: CMTime) {
-        guard let videoSource = videoSource else { return }
+        guard let videoSource = videoSource, let capturer = videoCapturer else { return }
+
+        // Throttle to ~30fps to reduce encoder pressure
+        let timestampNs = Int64(CMTimeGetSeconds(timestamp) * 1_000_000_000)
+        let minFrameInterval: Int64 = 33_000_000 // ~30fps in nanoseconds
+        if timestampNs - lastFrameTime < minFrameInterval {
+            return
+        }
+        lastFrameTime = timestampNs
 
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
@@ -108,12 +124,16 @@ final class WebRTCManager: NSObject {
         // Update output format to match actual frame dimensions
         videoSource.adaptOutputFormat(toWidth: Int32(width), height: Int32(height), fps: 30)
 
+        // Lock the pixel buffer for reading
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+
+        // Create RTC pixel buffer wrapper
         let rtcPixelBuffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
-        let timestampNs = Int64(CMTimeGetSeconds(timestamp) * 1_000_000_000)
         let videoFrame = RTCVideoFrame(buffer: rtcPixelBuffer, rotation: ._0, timeStampNs: timestampNs)
 
-        // Push frame directly to the video source delegate
-        videoSource.delegate?.capturer?(RTCVideoCapturer(), didCapture: videoFrame)
+        // Push frame through our custom capturer
+        capturer.captureFrame(videoFrame)
     }
 
     func disconnect() {

@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import AppKit
 import Shared
 
 final class InputController {

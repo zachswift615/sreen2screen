@@ -2,11 +2,16 @@ import Cocoa
 import Shared
 import CoreMedia
 import ScreenCaptureKit
+import WebRTC
 
-@main
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var statusMenuItem: NSMenuItem!
+
+    override init() {
+        super.init()
+        print("AppDelegate: init called")
+    }
 
     // Note: BonjourAdvertiser removed - SignalingServer handles Bonjour advertising
     private var signalingServer: SignalingServer?
@@ -17,6 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var isConnected = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        print("AppDelegate: applicationDidFinishLaunching called")
         setupStatusBar()
         Task {
             await startServices()
@@ -24,10 +30,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupStatusBar() {
+        print("AppDelegate: Setting up status bar")
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        print("AppDelegate: Status item created: \(statusItem != nil)")
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "Screen2Screen")
+            // Try system symbol first, fall back to title if unavailable
+            if let image = NSImage(systemSymbolName: "display", accessibilityDescription: "Screen2Screen") {
+                button.image = image
+                print("AppDelegate: Button image set")
+            } else {
+                button.title = "S2S"
+                print("AppDelegate: Using text fallback")
+            }
+        } else {
+            print("AppDelegate: WARNING - statusItem.button is nil!")
         }
 
         let menu = NSMenu()

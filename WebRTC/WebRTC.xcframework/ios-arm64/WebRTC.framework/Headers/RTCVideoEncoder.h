@@ -15,7 +15,7 @@
 #import "RTCVideoEncoderQpThresholds.h"
 #import "RTCVideoEncoderSettings.h"
 #import "RTCVideoFrame.h"
-#import "sdk/objc/base/RTCMacros.h"
+#import <WebRTC/RTCMacros.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -79,7 +79,7 @@ final class ScreenCaptureService: NSObject {
 
     var currentDisplayInfo: (width: Int, height: Int, scale: Double)? {
         guard let display = selectedDisplay else { return nil }
-        let scaleFactor = NSScreen.main?.backingScaleFactor ?? 2.0
+        let scaleFactor = Double(NSScreen.main?.backingScaleFactor ?? 2.0)
         return (
             width: display.width,
             height: display.height,

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ScreenToScreenHost/ScreenToScreenHost.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ScreenToScreenClient/ScreenToScreenClient.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Shared">
+   </FileRef>
+</Workspace>

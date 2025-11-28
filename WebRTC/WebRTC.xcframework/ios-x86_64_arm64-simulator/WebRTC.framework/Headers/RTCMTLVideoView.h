@@ -12,7 +12,7 @@
 
 #import "RTCVideoFrame.h"
 #import "RTCVideoRenderer.h"
-#import "sdk/objc/base/RTCMacros.h"
+#import <WebRTC/RTCMacros.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

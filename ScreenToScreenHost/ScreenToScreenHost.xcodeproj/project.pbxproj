@@ -3,21 +3,50 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D152051A4728E51A72B4633 /* SignalingServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962E0F6151F1AE2493BF5734 /* SignalingServer.swift */; };
 		70469007B2FC012E42D4922C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FC701CF354688421B445F2 /* AppDelegate.swift */; };
+		8A2C806CA89BD8BC554FF576 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D56C0C80A15CC47F66C325 /* main.swift */; };
+		A628FFB82ED9487C00B3862B /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = A628FFB72ED9487C00B3862B /* Shared */; };
+		A64C88BD2ED96ACD00F76598 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64C88B92ED969EF00F76598 /* WebRTC.framework */; };
+		A64C88BE2ED96ACD00F76598 /* WebRTC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A64C88B92ED969EF00F76598 /* WebRTC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A7CF1DE38FD14ED4BFC3B096 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C8210651D71E58606C090 /* ScreenCaptureService.swift */; };
+		B4651DBAABB063217F35DFF9 /* InputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1833C7C6B34670AE49D6384 /* InputController.swift */; };
 		DED679D17EA35397BB14B36A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9F7876864BE0DC614778B /* Cocoa.framework */; };
+		E174EE5CF701632A283FF81C /* WebRTCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB441164D93312786B677EC /* WebRTCManager.swift */; };
 		EE9E74E4608BBA5FE9D7564C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 670460DC62A13D47A4A5571C /* Info.plist */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A64C88BF2ED96ACD00F76598 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A64C88BE2ED96ACD00F76598 /* WebRTC.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1B4C8210651D71E58606C090 /* ScreenCaptureService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenCaptureService.swift; path = Sources/Services/ScreenCaptureService.swift; sourceTree = "<group>"; };
 		670460DC62A13D47A4A5571C /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		95FC701CF354688421B445F2 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Sources/App/AppDelegate.swift; sourceTree = "<group>"; };
+		962E0F6151F1AE2493BF5734 /* SignalingServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignalingServer.swift; path = Sources/Services/SignalingServer.swift; sourceTree = "<group>"; };
+		A628FFB92ED948BC00B3862B /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = ../WebRTC/WebRTC.xcframework; sourceTree = "<group>"; };
+		A64C88B92ED969EF00F76598 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = ../WebRTC/WebRTC.framework; sourceTree = "<group>"; };
 		ACEE95128DF69184E4F42481 /* ScreenToScreenHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenToScreenHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9460669D739D156D81568A7 /* ScreenToScreenHost.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = ScreenToScreenHost.entitlements; path = Sources/App/ScreenToScreenHost.entitlements; sourceTree = "<group>"; };
+		CCB441164D93312786B677EC /* WebRTCManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebRTCManager.swift; path = Sources/Services/WebRTCManager.swift; sourceTree = "<group>"; };
+		D1833C7C6B34670AE49D6384 /* InputController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InputController.swift; path = Sources/Services/InputController.swift; sourceTree = "<group>"; };
 		D9A9F7876864BE0DC614778B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		F8D56C0C80A15CC47F66C325 /* main.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = main.swift; path = Sources/App/main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +55,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DED679D17EA35397BB14B36A /* Cocoa.framework in Frameworks */,
+				A628FFB82ED9487C00B3862B /* Shared in Frameworks */,
+				A64C88BD2ED96ACD00F76598 /* WebRTC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +84,7 @@
 			children = (
 				95FC701CF354688421B445F2 /* AppDelegate.swift */,
 				B9460669D739D156D81568A7 /* ScreenToScreenHost.entitlements */,
+				F8D56C0C80A15CC47F66C325 /* main.swift */,
 			);
 			name = App;
 			sourceTree = "<group>";
@@ -87,6 +119,8 @@
 		7FCDAD0E81ECE3A02B609B9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A64C88B92ED969EF00F76598 /* WebRTC.framework */,
+				A628FFB92ED948BC00B3862B /* WebRTC.xcframework */,
 				ECB0C07EB518215923E889DC /* OS X */,
 			);
 			name = Frameworks;
@@ -103,6 +137,10 @@
 		ED395DB6F41DDCAC41BD3570 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				D1833C7C6B34670AE49D6384 /* InputController.swift */,
+				1B4C8210651D71E58606C090 /* ScreenCaptureService.swift */,
+				962E0F6151F1AE2493BF5734 /* SignalingServer.swift */,
+				CCB441164D93312786B677EC /* WebRTCManager.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -117,6 +155,7 @@
 				1A571564B3FD64AF744C6157 /* Sources */,
 				13CEC913B7D56A61C5BB0B5C /* Frameworks */,
 				BA4677DC156212EAA61E2AA2 /* Resources */,
+				A64C88BF2ED96ACD00F76598 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -145,8 +184,9 @@
 				Base,
 			);
 			mainGroup = 7E7081D00EEC4BFADF3BCB68;
-			minimizedProjectReferenceProxies = 0;
-			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				A628FFB62ED9487C00B3862B /* XCLocalSwiftPackageReference "Shared" */,
+			);
 			productRefGroup = 11D08A2EDB19BF3CBEFCAF92 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -173,6 +213,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				70469007B2FC012E42D4922C /* AppDelegate.swift in Sources */,
+				B4651DBAABB063217F35DFF9 /* InputController.swift in Sources */,
+				A7CF1DE38FD14ED4BFC3B096 /* ScreenCaptureService.swift in Sources */,
+				2D152051A4728E51A72B4633 /* SignalingServer.swift in Sources */,
+				E174EE5CF701632A283FF81C /* WebRTCManager.swift in Sources */,
+				8A2C806CA89BD8BC554FF576 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,9 +294,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2DM29VZ8ED;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../WebRTC";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.screen2screen.host;
@@ -324,9 +374,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2DM29VZ8ED;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../WebRTC";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.screen2screen.host;
@@ -358,6 +413,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A628FFB62ED9487C00B3862B /* XCLocalSwiftPackageReference "Shared" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Shared;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A628FFB72ED9487C00B3862B /* Shared */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Shared;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8510C48E3D7895C8F802F44B /* Project object */;
 }

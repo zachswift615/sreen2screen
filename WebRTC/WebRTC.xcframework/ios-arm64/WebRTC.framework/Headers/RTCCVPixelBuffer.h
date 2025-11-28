@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import "RTCVideoFrameBuffer.h"
-#import "sdk/objc/base/RTCMacros.h"
+#import <WebRTC/RTCMacros.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

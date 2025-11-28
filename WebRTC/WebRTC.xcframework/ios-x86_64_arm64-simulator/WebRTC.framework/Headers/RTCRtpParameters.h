@@ -14,7 +14,7 @@
 #import "RTCRtpCodecParameters.h"
 #import "RTCRtpEncodingParameters.h"
 #import "RTCRtpHeaderExtension.h"
-#import "sdk/objc/base/RTCMacros.h"
+#import <WebRTC/RTCMacros.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

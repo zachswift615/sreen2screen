@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleName</key>
     <string>Screen2Screen</string>
     <key>CFBundleIdentifier</key>
@@ -11,7 +13,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>MinimumOSVersion</key>
-    <string>15.0</string>
+    <string>16.0</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UISupportedInterfaceOrientations</key>
@@ -22,7 +24,7 @@
     </array>
     <key>NSBonjourServices</key>
     <array>
-        <string>_screencast._tcp</string>
+        <string>_screen2screen._tcp</string>
     </array>
     <key>NSLocalNetworkUsageDescription</key>
     <string>Screen2Screen needs local network access to discover and connect to your Mac.</string>
