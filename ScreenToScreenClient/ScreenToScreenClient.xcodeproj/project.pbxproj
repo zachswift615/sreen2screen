@@ -11,6 +11,7 @@
 		4171B8789A6517AE67F1DB2E /* SignalingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73196B6425C747C3799A8A02 /* SignalingClient.swift */; };
 		4FB7E619D21979BE11019ACE /* CursorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7F68C6E73EC4DA568FB4D2 /* CursorState.swift */; };
 		506F057F1C7FE305EF8FDE00 /* HostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08481B818166A534DA1B52F5 /* HostInfo.swift */; };
+		797FF03A3BD585492CE55814 /* LiveKitWebRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3926F8AF71142EC6CEB8FD4F /* LiveKitWebRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8763CD3E4EF268DE5D5AB5B7 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91ACCF01E80164347694C24B /* BonjourBrowser.swift */; };
 		94FA90AA39622B435E23C96F /* VideoRenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1771FF41114070B597A4C8 /* VideoRenderView.swift */; };
 		98F092F4C992BAC21B6585DB /* HostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090490B2A8840AC0655C807A /* HostListView.swift */; };
@@ -18,9 +19,8 @@
 		9D2CF37127ABA582DE657038 /* RemoteSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05659187A6C806C2448CD6F8 /* RemoteSessionView.swift */; };
 		A185FDE394FB14FD8393EDDB /* SpecialKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D55A72893E4860DB9F1746 /* SpecialKeyboardView.swift */; };
 		A628FFBF2ED9492B00B3862B /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = A628FFBE2ED9492B00B3862B /* Shared */; };
-		A6619DDD2ED9DB28009AC307 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A628FFC02ED9496E00B3862B /* WebRTC.xcframework */; };
-		A6619DDE2ED9DB28009AC307 /* WebRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A628FFC02ED9496E00B3862B /* WebRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AEF095F8AB1446B7FF0C6F06 /* GestureOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BAE286593A9EDF755C8A70C /* GestureOverlayView.swift */; };
+		AF8211F7B2E61F1C4795B876 /* LiveKitWebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3926F8AF71142EC6CEB8FD4F /* LiveKitWebRTC.xcframework */; };
 		CA32F58E2781BC2B20EF5E20 /* ScreenToScreenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */; };
 		CC91DA4F1555CB7BA6FB3A85 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 330B77CEDCD0A9B6AADE8DC6 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -32,7 +32,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				A6619DDE2ED9DB28009AC307 /* WebRTC.xcframework in Embed Frameworks */,
+				797FF03A3BD585492CE55814 /* LiveKitWebRTC.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -47,13 +47,13 @@
 		1BAE286593A9EDF755C8A70C /* GestureOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GestureOverlayView.swift; sourceTree = "<group>"; };
 		2FF0F7330D21B903B818C208 /* WebRTCClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebRTCClient.swift; sourceTree = "<group>"; };
 		330B77CEDCD0A9B6AADE8DC6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		3926F8AF71142EC6CEB8FD4F /* LiveKitWebRTC.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = LiveKitWebRTC.xcframework; path = ../WebRTC/LiveKitWebRTC.xcframework; sourceTree = SOURCE_ROOT; };
 		4E7F68C6E73EC4DA568FB4D2 /* CursorState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CursorState.swift; sourceTree = "<group>"; };
 		697F9EE4A50D5FD74A294975 /* ScreenToScreenClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenToScreenClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73196B6425C747C3799A8A02 /* SignalingClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignalingClient.swift; sourceTree = "<group>"; };
 		75D55A72893E4860DB9F1746 /* SpecialKeyboardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpecialKeyboardView.swift; sourceTree = "<group>"; };
 		7B4434AC453BE80143F464D6 /* ScreenToScreenApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenToScreenApp.swift; sourceTree = "<group>"; };
 		91ACCF01E80164347694C24B /* BonjourBrowser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BonjourBrowser.swift; sourceTree = "<group>"; };
-		A628FFC02ED9496E00B3862B /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = ../WebRTC/WebRTC.xcframework; sourceTree = "<group>"; };
 		B9CAC2A9CD4B0FEA70ACBFD3 /* GestureController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GestureController.swift; sourceTree = "<group>"; };
 		CC1771FF41114070B597A4C8 /* VideoRenderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoRenderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,7 +65,7 @@
 			files = (
 				CC91DA4F1555CB7BA6FB3A85 /* Foundation.framework in Frameworks */,
 				A628FFBF2ED9492B00B3862B /* Shared in Frameworks */,
-				A6619DDD2ED9DB28009AC307 /* WebRTC.xcframework in Frameworks */,
+				AF8211F7B2E61F1C4795B876 /* LiveKitWebRTC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +75,8 @@
 		0913E38434C7D11398529A6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A628FFC02ED9496E00B3862B /* WebRTC.xcframework */,
 				36586C8B9B0F60E627A6B4AD /* iOS */,
+				3926F8AF71142EC6CEB8FD4F /* LiveKitWebRTC.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -214,7 +214,7 @@
 			);
 			mainGroup = 8C5C73626FBB788C3A79086B;
 			packageReferences = (
-				A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "../Shared" */,
+				A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "Shared" */,
 			);
 			productRefGroup = 095DF1BBFF713B62F1F1FEE8 /* Products */;
 			projectDirPath = "";
@@ -450,7 +450,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "../Shared" */ = {
+		A628FFBD2ED9492B00B3862B /* XCLocalSwiftPackageReference "Shared" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../Shared;
 		};

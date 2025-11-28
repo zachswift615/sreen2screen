@@ -1,19 +1,19 @@
 import Foundation
-import WebRTC
+import LiveKitWebRTC
 import Shared
 import CoreMedia
 
 protocol WebRTCManagerDelegate: AnyObject {
     func webRTCManager(_ manager: WebRTCManager, didGenerateAnswer sdp: String)
-    func webRTCManager(_ manager: WebRTCManager, didGenerateIceCandidate candidate: RTCIceCandidate)
+    func webRTCManager(_ manager: WebRTCManager, didGenerateIceCandidate candidate: LKRTCIceCandidate)
     func webRTCManager(_ manager: WebRTCManager, didReceiveInputMessage message: InputMessage)
     func webRTCManagerDidConnect(_ manager: WebRTCManager)
     func webRTCManagerDidDisconnect(_ manager: WebRTCManager)
 }
 
 // Custom video capturer to inject frames into WebRTC
-final class ScreenCapturer: RTCVideoCapturer {
-    func captureFrame(_ frame: RTCVideoFrame) {
+final class ScreenCapturer: LKRTCVideoCapturer {
+    func captureFrame(_ frame: LKRTCVideoFrame) {
         self.delegate?.capturer(self, didCapture: frame)
     }
 }
@@ -21,36 +21,41 @@ final class ScreenCapturer: RTCVideoCapturer {
 final class WebRTCManager: NSObject {
     weak var delegate: WebRTCManagerDelegate?
 
-    private let factory: RTCPeerConnectionFactory
-    private var peerConnection: RTCPeerConnection?
-    private var dataChannel: RTCDataChannel?
-    private var videoSource: RTCVideoSource?
-    private var videoTrack: RTCVideoTrack?
+    private let factory: LKRTCPeerConnectionFactory
+    private var peerConnection: LKRTCPeerConnection?
+    private var dataChannel: LKRTCDataChannel?
+    private var videoSource: LKRTCVideoSource?
+    private var videoTrack: LKRTCVideoTrack?
     private var videoCapturer: ScreenCapturer?
 
     private let decoder = JSONDecoder()
+    private let encoder = JSONEncoder()
+
+    // Throttle cursor position updates to ~60fps max
+    private var lastCursorSendTime: UInt64 = 0
+    private let cursorSendInterval: UInt64 = 16_000_000 // 16ms in nanoseconds (~60fps)
 
     override init() {
-        RTCInitializeSSL()
+        LKRTCInitializeSSL()
 
-        let encoderFactory = RTCDefaultVideoEncoderFactory()
-        let decoderFactory = RTCDefaultVideoDecoderFactory()
-        factory = RTCPeerConnectionFactory(encoderFactory: encoderFactory, decoderFactory: decoderFactory)
+        let encoderFactory = LKRTCDefaultVideoEncoderFactory()
+        let decoderFactory = LKRTCDefaultVideoDecoderFactory()
+        factory = LKRTCPeerConnectionFactory(encoderFactory: encoderFactory, decoderFactory: decoderFactory)
 
         super.init()
     }
 
     deinit {
-        RTCCleanupSSL()
+        LKRTCCleanupSSL()
     }
 
     func setupPeerConnection() {
-        let config = RTCConfiguration()
+        let config = LKRTCConfiguration()
         config.sdpSemantics = .unifiedPlan
         // Empty ICE servers for local network (direct connection)
         config.iceServers = []
 
-        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
+        let constraints = LKRTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
         peerConnection = factory.peerConnection(with: config, constraints: constraints, delegate: self)
 
@@ -69,7 +74,7 @@ final class WebRTCManager: NSObject {
     }
 
     func handleOffer(sdp: String) {
-        let sessionDescription = RTCSessionDescription(type: .offer, sdp: sdp)
+        let sessionDescription = LKRTCSessionDescription(type: .offer, sdp: sdp)
 
         peerConnection?.setRemoteDescription(sessionDescription) { [weak self] error in
             if let error = error {
@@ -81,7 +86,7 @@ final class WebRTCManager: NSObject {
     }
 
     private func createAnswer() {
-        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
+        let constraints = LKRTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
         peerConnection?.answer(for: constraints) { [weak self] sessionDescription, error in
             guard let self = self, let sdp = sessionDescription else {
@@ -101,8 +106,12 @@ final class WebRTCManager: NSObject {
     }
 
     func handleIceCandidate(candidate: String, sdpMLineIndex: Int32, sdpMid: String?) {
-        let iceCandidate = RTCIceCandidate(sdp: candidate, sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
-        peerConnection?.add(iceCandidate)
+        let iceCandidate = LKRTCIceCandidate(sdp: candidate, sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
+        peerConnection?.add(iceCandidate) { error in
+            if let error = error {
+                print("Failed to add ICE candidate: \(error)")
+            }
+        }
     }
 
     private var lastFrameTime: Int64 = 0
@@ -129,8 +138,8 @@ final class WebRTCManager: NSObject {
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
 
         // Create RTC pixel buffer wrapper
-        let rtcPixelBuffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
-        let videoFrame = RTCVideoFrame(buffer: rtcPixelBuffer, rotation: ._0, timeStampNs: timestampNs)
+        let rtcPixelBuffer = LKRTCCVPixelBuffer(pixelBuffer: pixelBuffer)
+        let videoFrame = LKRTCVideoFrame(buffer: rtcPixelBuffer, rotation: ._0, timeStampNs: timestampNs)
 
         // Push frame through our custom capturer
         capturer.captureFrame(videoFrame)
@@ -142,26 +151,44 @@ final class WebRTCManager: NSObject {
         peerConnection?.close()
         peerConnection = nil
     }
+
+    func sendCursorPosition(x: Double, y: Double) {
+        guard let dataChannel = dataChannel, dataChannel.readyState == .open else { return }
+
+        // Throttle updates to avoid flooding the data channel
+        let now = DispatchTime.now().uptimeNanoseconds
+        guard now - lastCursorSendTime >= cursorSendInterval else { return }
+        lastCursorSendTime = now
+
+        let message = HostMessage.cursorPosition(x: x, y: y)
+        do {
+            let data = try encoder.encode(message)
+            let buffer = LKRTCDataBuffer(data: data, isBinary: false)
+            dataChannel.sendData(buffer)
+        } catch {
+            print("Failed to encode cursor position: \(error)")
+        }
+    }
 }
 
-extension WebRTCManager: RTCPeerConnectionDelegate {
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
+extension WebRTCManager: LKRTCPeerConnectionDelegate {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didChange stateChanged: LKRTCSignalingState) {
         print("Signaling state changed: \(stateChanged.rawValue)")
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didAdd stream: LKRTCMediaStream) {
         print("Stream added")
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didRemove stream: LKRTCMediaStream) {
         print("Stream removed")
     }
 
-    func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
+    func peerConnectionShouldNegotiate(_ peerConnection: LKRTCPeerConnection) {
         print("Negotiation needed")
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didChange newState: LKRTCIceConnectionState) {
         print("ICE connection state changed: \(newState.rawValue)")
 
         DispatchQueue.main.async { [weak self] in
@@ -177,31 +204,31 @@ extension WebRTCManager: RTCPeerConnectionDelegate {
         }
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didChange newState: LKRTCIceGatheringState) {
         print("ICE gathering state changed: \(newState.rawValue)")
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didGenerate candidate: LKRTCIceCandidate) {
         delegate?.webRTCManager(self, didGenerateIceCandidate: candidate)
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didRemove candidates: [LKRTCIceCandidate]) {
         print("ICE candidates removed")
     }
 
-    func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
+    func peerConnection(_ peerConnection: LKRTCPeerConnection, didOpen dataChannel: LKRTCDataChannel) {
         print("Data channel opened: \(dataChannel.label)")
         self.dataChannel = dataChannel
         dataChannel.delegate = self
     }
 }
 
-extension WebRTCManager: RTCDataChannelDelegate {
-    func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
+extension WebRTCManager: LKRTCDataChannelDelegate {
+    func dataChannelDidChangeState(_ dataChannel: LKRTCDataChannel) {
         print("Data channel state changed: \(dataChannel.readyState.rawValue)")
     }
 
-    func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
+    func dataChannel(_ dataChannel: LKRTCDataChannel, didReceiveMessageWith buffer: LKRTCDataBuffer) {
         guard let data = buffer.data as Data? else { return }
 
         do {

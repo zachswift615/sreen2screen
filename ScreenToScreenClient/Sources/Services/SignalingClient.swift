@@ -127,6 +127,9 @@ final class SignalingClient {
                     self.delegate?.signalingClient(self, didReceiveIceCandidate: candidate, sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
                 case .screenInfo(let width, let height, let scale):
                     self.delegate?.signalingClient(self, didReceiveScreenInfo: width, height: height, scale: scale)
+                case .cursorPos:
+                    // Cursor position is now received via WebRTC data channel for lower latency
+                    break
                 default:
                     break
                 }

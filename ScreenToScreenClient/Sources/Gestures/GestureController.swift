@@ -3,6 +3,9 @@ import Shared
 
 protocol GestureControllerDelegate: AnyObject {
     func gestureController(_ controller: GestureController, didGenerateInput message: InputMessage)
+    func gestureController(_ controller: GestureController, didUpdateScale scale: CGFloat)
+    func gestureControllerDidEndPinch(_ controller: GestureController)
+    func gestureController(_ controller: GestureController, didMoveCursorBy delta: CGPoint, in viewSize: CGSize)
 }
 
 final class GestureController: NSObject {
@@ -10,10 +13,16 @@ final class GestureController: NSObject {
 
     private let cursorState: CursorState
     private var lastPanLocation: CGPoint?
+    private var initialPinchScale: CGFloat = 1.0
+    private var currentScale: CGFloat = 1.0
 
     init(cursorState: CursorState) {
         self.cursorState = cursorState
         super.init()
+    }
+
+    func setCurrentScale(_ scale: CGFloat) {
+        self.currentScale = scale
     }
 
     func setupGestures(on view: UIView) {
@@ -54,7 +63,8 @@ final class GestureController: NSObject {
     }
 
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: gesture.view)
+        guard let view = gesture.view else { return }
+        let location = gesture.location(in: view)
 
         switch gesture.state {
         case .began:
@@ -67,8 +77,15 @@ final class GestureController: NSObject {
 
             // Scale movement (adjust sensitivity)
             let sensitivity: CGFloat = 1.5
-            let message = InputMessage.mouseMove(dx: Double(dx * sensitivity), dy: Double(dy * sensitivity))
+            let scaledDx = dx * sensitivity
+            let scaledDy = dy * sensitivity
+
+            let message = InputMessage.mouseMove(dx: Double(scaledDx), dy: Double(scaledDy))
             delegate?.gestureController(self, didGenerateInput: message)
+
+            // Notify delegate of cursor movement for pan-to-follow when zoomed
+            let delta = CGPoint(x: scaledDx, y: scaledDy)
+            delegate?.gestureController(self, didMoveCursorBy: delta, in: view.bounds.size)
 
             lastPanLocation = location
         case .ended, .cancelled:
@@ -107,8 +124,18 @@ final class GestureController: NSObject {
     }
 
     @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
-        // Pinch zoom is handled client-side only (view transform)
-        // This placeholder allows the gesture to be recognized
+        switch gesture.state {
+        case .began:
+            initialPinchScale = currentScale
+        case .changed:
+            let newScale = max(1.0, min(initialPinchScale * gesture.scale, 5.0))
+            currentScale = newScale
+            delegate?.gestureController(self, didUpdateScale: newScale)
+        case .ended, .cancelled:
+            delegate?.gestureControllerDidEndPinch(self)
+        default:
+            break
+        }
     }
 
     // Called from keyboard view

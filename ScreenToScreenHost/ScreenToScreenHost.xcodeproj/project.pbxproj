@@ -11,12 +11,12 @@
 		70469007B2FC012E42D4922C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FC701CF354688421B445F2 /* AppDelegate.swift */; };
 		8A2C806CA89BD8BC554FF576 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D56C0C80A15CC47F66C325 /* main.swift */; };
 		A628FFB82ED9487C00B3862B /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = A628FFB72ED9487C00B3862B /* Shared */; };
-		A64C88BD2ED96ACD00F76598 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64C88B92ED969EF00F76598 /* WebRTC.framework */; };
-		A64C88BE2ED96ACD00F76598 /* WebRTC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A64C88B92ED969EF00F76598 /* WebRTC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A7CF1DE38FD14ED4BFC3B096 /* ScreenCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C8210651D71E58606C090 /* ScreenCaptureService.swift */; };
 		B4651DBAABB063217F35DFF9 /* InputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1833C7C6B34670AE49D6384 /* InputController.swift */; };
+		B9469B3D5399F8EE0C6035FF /* LiveKitWebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21730E39525E658532909FDA /* LiveKitWebRTC.xcframework */; };
 		DED679D17EA35397BB14B36A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A9F7876864BE0DC614778B /* Cocoa.framework */; };
 		E174EE5CF701632A283FF81C /* WebRTCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB441164D93312786B677EC /* WebRTCManager.swift */; };
+		E663AF050FBA4E3A2EA81092 /* LiveKitWebRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 21730E39525E658532909FDA /* LiveKitWebRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EE9E74E4608BBA5FE9D7564C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 670460DC62A13D47A4A5571C /* Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -27,7 +27,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				A64C88BE2ED96ACD00F76598 /* WebRTC.framework in Embed Frameworks */,
+				E663AF050FBA4E3A2EA81092 /* LiveKitWebRTC.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -36,11 +36,10 @@
 
 /* Begin PBXFileReference section */
 		1B4C8210651D71E58606C090 /* ScreenCaptureService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScreenCaptureService.swift; path = Sources/Services/ScreenCaptureService.swift; sourceTree = "<group>"; };
+		21730E39525E658532909FDA /* LiveKitWebRTC.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = LiveKitWebRTC.xcframework; path = ../WebRTC/LiveKitWebRTC.xcframework; sourceTree = SOURCE_ROOT; };
 		670460DC62A13D47A4A5571C /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		95FC701CF354688421B445F2 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Sources/App/AppDelegate.swift; sourceTree = "<group>"; };
 		962E0F6151F1AE2493BF5734 /* SignalingServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignalingServer.swift; path = Sources/Services/SignalingServer.swift; sourceTree = "<group>"; };
-		A628FFB92ED948BC00B3862B /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = ../WebRTC/WebRTC.xcframework; sourceTree = "<group>"; };
-		A64C88B92ED969EF00F76598 /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = ../WebRTC/WebRTC.framework; sourceTree = "<group>"; };
 		ACEE95128DF69184E4F42481 /* ScreenToScreenHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenToScreenHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9460669D739D156D81568A7 /* ScreenToScreenHost.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = ScreenToScreenHost.entitlements; path = Sources/App/ScreenToScreenHost.entitlements; sourceTree = "<group>"; };
 		CCB441164D93312786B677EC /* WebRTCManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebRTCManager.swift; path = Sources/Services/WebRTCManager.swift; sourceTree = "<group>"; };
@@ -56,7 +55,7 @@
 			files = (
 				DED679D17EA35397BB14B36A /* Cocoa.framework in Frameworks */,
 				A628FFB82ED9487C00B3862B /* Shared in Frameworks */,
-				A64C88BD2ED96ACD00F76598 /* WebRTC.framework in Frameworks */,
+				B9469B3D5399F8EE0C6035FF /* LiveKitWebRTC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,9 +118,8 @@
 		7FCDAD0E81ECE3A02B609B9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A64C88B92ED969EF00F76598 /* WebRTC.framework */,
-				A628FFB92ED948BC00B3862B /* WebRTC.xcframework */,
 				ECB0C07EB518215923E889DC /* OS X */,
+				21730E39525E658532909FDA /* LiveKitWebRTC.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -295,7 +293,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2DM29VZ8ED;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../WebRTC";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../WebRTC",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -375,7 +376,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2DM29VZ8ED;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../WebRTC";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../WebRTC",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

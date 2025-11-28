@@ -1,21 +1,21 @@
 import SwiftUI
-import WebRTC
+import LiveKitWebRTC
 
 struct VideoRenderView: UIViewRepresentable {
-    let videoTrack: RTCVideoTrack?
+    let videoTrack: LKRTCVideoTrack?
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
 
-    func makeUIView(context: Context) -> RTCMTLVideoView {
-        let view = RTCMTLVideoView()
+    func makeUIView(context: Context) -> LKRTCMTLVideoView {
+        let view = LKRTCMTLVideoView()
         view.videoContentMode = .scaleAspectFit
         view.backgroundColor = .black
         return view
     }
 
-    func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
+    func updateUIView(_ uiView: LKRTCMTLVideoView, context: Context) {
         // Remove old track if different
         if let oldTrack = context.coordinator.currentTrack, oldTrack != videoTrack {
             oldTrack.remove(uiView)
@@ -29,13 +29,13 @@ struct VideoRenderView: UIViewRepresentable {
         }
     }
 
-    static func dismantleUIView(_ uiView: RTCMTLVideoView, coordinator: Coordinator) {
+    static func dismantleUIView(_ uiView: LKRTCMTLVideoView, coordinator: Coordinator) {
         // Remove track when view is dismantled
         coordinator.currentTrack?.remove(uiView)
         coordinator.currentTrack = nil
     }
 
     class Coordinator {
-        var currentTrack: RTCVideoTrack?
+        var currentTrack: LKRTCVideoTrack?
     }
 }

@@ -1,6 +1,7 @@
 import SwiftUI
-import WebRTC
+import LiveKitWebRTC
 import Shared
+import QuartzCore
 
 struct RemoteSessionView: View {
     let host: HostInfo
@@ -8,8 +9,6 @@ struct RemoteSessionView: View {
 
     @StateObject private var viewModel: RemoteSessionViewModel
     @State private var showKeyboard = false
-    @State private var scale: CGFloat = 1.0
-    @State private var offset: CGSize = .zero
 
     init(host: HostInfo, onDisconnect: @escaping () -> Void) {
         self.host = host
@@ -26,8 +25,8 @@ struct RemoteSessionView: View {
                 ZStack {
                     if let videoTrack = viewModel.videoTrack {
                         VideoRenderView(videoTrack: videoTrack)
-                            .scaleEffect(scale)
-                            .offset(offset)
+                            .scaleEffect(viewModel.scale)
+                            .offset(viewModel.panOffset)
 
                         // Gesture overlay for UIKit gesture handling
                         GestureOverlayView(gestureController: viewModel.gestureController)
@@ -44,28 +43,12 @@ struct RemoteSessionView: View {
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .contentShape(Rectangle())
-                .gesture(
-                    MagnificationGesture()
-                        .onChanged { value in
-                            scale = max(1.0, min(value, 5.0))
-                        }
-                        .onEnded { _ in
-                            if scale < 1.1 {
-                                withAnimation {
-                                    scale = 1.0
-                                    offset = .zero
-                                }
-                            }
-                        }
-                )
-                .simultaneousGesture(
-                    scale > 1.0 ?
-                    DragGesture()
-                        .onChanged { value in
-                            offset = value.translation
-                        }
-                    : nil
-                )
+                .onAppear {
+                    viewModel.viewSize = geometry.size
+                }
+                .onChange(of: geometry.size) { newSize in
+                    viewModel.viewSize = newSize
+                }
                 .overlay(alignment: .topTrailing) {
                     HStack(spacing: 12) {
                         Button(action: { showKeyboard.toggle() }) {
@@ -107,6 +90,19 @@ struct RemoteSessionView: View {
             .onAppear {
                 setupGestureView()
             }
+            .onChange(of: viewModel.scale) { newScale in
+                viewModel.gestureController.setCurrentScale(newScale)
+            }
+            .onChange(of: viewModel.shouldResetZoom) { shouldReset in
+                if shouldReset {
+                    withAnimation {
+                        viewModel.scale = 1.0
+                        viewModel.panOffset = .zero
+                    }
+                    viewModel.shouldResetZoom = false
+                    viewModel.gestureController.setCurrentScale(1.0)
+                }
+            }
         }
         .statusBar(hidden: true)
         .persistentSystemOverlays(.hidden)
@@ -126,8 +122,28 @@ struct RemoteSessionView: View {
 
 @MainActor
 final class RemoteSessionViewModel: ObservableObject {
-    @Published var videoTrack: RTCVideoTrack?
+    @Published var videoTrack: LKRTCVideoTrack?
     @Published var connectionStatus = "Connecting..."
+    @Published var scale: CGFloat = 1.0
+    @Published var shouldResetZoom = false
+    @Published var panOffset: CGSize = .zero
+
+    // Remote screen dimensions (updated when connection established)
+    private var remoteScreenWidth: CGFloat = 1920
+    private var remoteScreenHeight: CGFloat = 1080
+
+    // Current cursor position from host (in remote screen coordinates, top-left origin)
+    private var cursorX: CGFloat = 960
+    private var cursorY: CGFloat = 540
+
+    // Pending cursor position update (set from background thread, consumed on main thread)
+    private var pendingCursorX: Double?
+    private var pendingCursorY: Double?
+    private let cursorLock = NSLock()
+    private var displayLink: CADisplayLink?
+
+    // View size for pan calculations (set by view)
+    var viewSize: CGSize = .zero
 
     let cursorState = CursorState()
     let gestureController: GestureController
@@ -150,11 +166,119 @@ final class RemoteSessionViewModel: ObservableObject {
     func connect() {
         connectionStatus = "Connecting to \(host.name)..."
         signalingClient.connect(to: host)
+        startDisplayLink()
     }
 
     func disconnect() {
+        stopDisplayLink()
         webRTCClient.disconnect()
         signalingClient.disconnect()
+    }
+
+    private func startDisplayLink() {
+        displayLink = CADisplayLink(target: self, selector: #selector(displayLinkFired))
+        displayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 30, maximum: 60, preferred: 60)
+        displayLink?.add(to: .main, forMode: .common)
+    }
+
+    private func stopDisplayLink() {
+        displayLink?.invalidate()
+        displayLink = nil
+    }
+
+    @objc private func displayLinkFired() {
+        // Check for pending cursor update
+        cursorLock.lock()
+        let x = pendingCursorX
+        let y = pendingCursorY
+        pendingCursorX = nil
+        pendingCursorY = nil
+        cursorLock.unlock()
+
+        if let x = x, let y = y {
+            updateCursorPosition(x: x, y: y)
+        }
+    }
+
+    /// Called from background thread - stores cursor position for next display link frame
+    func enqueueCursorPosition(x: Double, y: Double) {
+        cursorLock.lock()
+        pendingCursorX = x
+        pendingCursorY = y
+        cursorLock.unlock()
+    }
+
+    func updateCursorPosition(x: Double, y: Double) {
+        cursorX = CGFloat(x)
+        cursorY = CGFloat(y)
+
+        // Only update pan when zoomed in
+        guard scale > 1.0, viewSize.width > 0, viewSize.height > 0 else { return }
+
+        // Calculate the visible area dimensions in remote screen coordinates
+        let visibleWidth = remoteScreenWidth / scale
+        let visibleHeight = remoteScreenHeight / scale
+
+        // Current center of visible area in remote screen coordinates
+        // panOffset is in view coordinates; convert to remote coordinates
+        // When panOffset.width is positive, we're showing content to the left of center
+        let currentCenterX = remoteScreenWidth / 2 - (panOffset.width / viewSize.width * visibleWidth)
+        let currentCenterY = remoteScreenHeight / 2 - (panOffset.height / viewSize.height * visibleHeight)
+
+        // Calculate the visible bounds
+        let visibleMinX = currentCenterX - visibleWidth / 2
+        let visibleMaxX = currentCenterX + visibleWidth / 2
+        let visibleMinY = currentCenterY - visibleHeight / 2
+        let visibleMaxY = currentCenterY + visibleHeight / 2
+
+        // Edge margin: start panning when cursor is within this % of the edge
+        let edgeMarginPercent: CGFloat = 0.15
+        let marginX = visibleWidth * edgeMarginPercent
+        let marginY = visibleHeight * edgeMarginPercent
+
+        // Check if cursor is outside the "safe zone" (inner area)
+        var needsPan = false
+        var newCenterX = currentCenterX
+        var newCenterY = currentCenterY
+
+        // If cursor is near/past left edge
+        if cursorX < visibleMinX + marginX {
+            newCenterX = cursorX - marginX + visibleWidth / 2
+            needsPan = true
+        }
+        // If cursor is near/past right edge
+        else if cursorX > visibleMaxX - marginX {
+            newCenterX = cursorX + marginX - visibleWidth / 2
+            needsPan = true
+        }
+
+        // If cursor is near/past top edge
+        if cursorY < visibleMinY + marginY {
+            newCenterY = cursorY - marginY + visibleHeight / 2
+            needsPan = true
+        }
+        // If cursor is near/past bottom edge
+        else if cursorY > visibleMaxY - marginY {
+            newCenterY = cursorY + marginY - visibleHeight / 2
+            needsPan = true
+        }
+
+        if needsPan {
+            // Clamp new center so we don't pan beyond the remote screen edges
+            let minCenterX = visibleWidth / 2
+            let maxCenterX = remoteScreenWidth - visibleWidth / 2
+            let minCenterY = visibleHeight / 2
+            let maxCenterY = remoteScreenHeight - visibleHeight / 2
+
+            newCenterX = max(minCenterX, min(newCenterX, maxCenterX))
+            newCenterY = max(minCenterY, min(newCenterY, maxCenterY))
+
+            // Convert back to pan offset (view coordinates)
+            let newOffsetX = (remoteScreenWidth / 2 - newCenterX) / visibleWidth * viewSize.width
+            let newOffsetY = (remoteScreenHeight / 2 - newCenterY) / visibleHeight * viewSize.height
+
+            panOffset = CGSize(width: newOffsetX, height: newOffsetY)
+        }
     }
 }
 
@@ -189,8 +313,14 @@ extension RemoteSessionViewModel: SignalingClientDelegate {
     nonisolated func signalingClient(_ client: SignalingClient, didReceiveScreenInfo width: Int, height: Int, scale: Double) {
         Task { @MainActor in
             print("Remote screen: \(width)x\(height) @\(scale)x")
+            self.remoteScreenWidth = CGFloat(width)
+            self.remoteScreenHeight = CGFloat(height)
+            // Initialize cursor to center of screen
+            self.cursorX = CGFloat(width) / 2
+            self.cursorY = CGFloat(height) / 2
         }
     }
+
 }
 
 extension RemoteSessionViewModel: WebRTCClientDelegate {
@@ -200,16 +330,23 @@ extension RemoteSessionViewModel: WebRTCClientDelegate {
         }
     }
 
-    nonisolated func webRTCClient(_ client: WebRTCClient, didGenerateIceCandidate candidate: RTCIceCandidate) {
+    nonisolated func webRTCClient(_ client: WebRTCClient, didGenerateIceCandidate candidate: LKRTCIceCandidate) {
         Task { @MainActor in
             signalingClient.send(.ice(candidate: candidate.sdp, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid))
         }
     }
 
-    nonisolated func webRTCClient(_ client: WebRTCClient, didReceiveVideoTrack track: RTCVideoTrack) {
+    nonisolated func webRTCClient(_ client: WebRTCClient, didReceiveVideoTrack track: LKRTCVideoTrack) {
         Task { @MainActor in
             videoTrack = track
             connectionStatus = "Connected"
+        }
+    }
+
+    nonisolated func webRTCClient(_ client: WebRTCClient, didReceiveCursorPosition x: Double, y: Double) {
+        // Enqueue for processing on next display frame - avoids Task queue buildup
+        Task { @MainActor in
+            enqueueCursorPosition(x: x, y: y)
         }
     }
 
@@ -232,5 +369,24 @@ extension RemoteSessionViewModel: GestureControllerDelegate {
         Task { @MainActor in
             webRTCClient.sendInput(message)
         }
+    }
+
+    nonisolated func gestureController(_ controller: GestureController, didUpdateScale scale: CGFloat) {
+        Task { @MainActor in
+            self.scale = scale
+        }
+    }
+
+    nonisolated func gestureControllerDidEndPinch(_ controller: GestureController) {
+        Task { @MainActor in
+            if self.scale < 1.1 {
+                self.shouldResetZoom = true
+            }
+        }
+    }
+
+    nonisolated func gestureController(_ controller: GestureController, didMoveCursorBy delta: CGPoint, in viewSize: CGSize) {
+        // Panning is now handled by cursor position feedback from host
+        // This delegate method is no longer used for panning
     }
 }

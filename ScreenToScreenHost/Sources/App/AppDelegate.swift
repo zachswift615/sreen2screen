@@ -2,7 +2,7 @@ import Cocoa
 import Shared
 import CoreMedia
 import ScreenCaptureKit
-import WebRTC
+import LiveKitWebRTC
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
@@ -74,6 +74,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             try await screenCaptureService?.requestPermissionAndLoadDisplays()
             updateDisplayMenu()
+
+            // Set initial target display for InputController (defaults to main display)
+            if let mainScreen = NSScreen.main {
+                inputController?.setTargetDisplay(mainScreen)
+            }
         } catch {
             updateStatus("Permission denied")
             print("Screen capture permission error: \(error)")
@@ -122,6 +127,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func selectDisplay(_ sender: NSMenuItem) {
         guard let display = sender.representedObject as? SCDisplay else { return }
         screenCaptureService?.selectDisplay(display)
+
+        // Find the NSScreen corresponding to this display and update InputController
+        if let screen = NSScreen.screens.first(where: { screen in
+            // NSScreen's deviceDescription contains the display ID
+            guard let screenNumber = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID else {
+                return false
+            }
+            return screenNumber == display.displayID
+        }) {
+            inputController?.setTargetDisplay(screen)
+        }
+
         print("Selected display: \(display.displayID)")
     }
 
@@ -180,12 +197,15 @@ extension AppDelegate: WebRTCManagerDelegate {
         }
     }
 
-    func webRTCManager(_ manager: WebRTCManager, didGenerateIceCandidate candidate: RTCIceCandidate) {
+    func webRTCManager(_ manager: WebRTCManager, didGenerateIceCandidate candidate: LKRTCIceCandidate) {
         signalingServer?.send(.ice(candidate: candidate.sdp, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid))
     }
 
     func webRTCManager(_ manager: WebRTCManager, didReceiveInputMessage message: InputMessage) {
-        inputController?.handleInput(message)
+        if let cursorPos = inputController?.handleInput(message) {
+            // Send cursor position back to client via data channel (lower latency than signaling)
+            manager.sendCursorPosition(x: Double(cursorPos.x), y: Double(cursorPos.y))
+        }
     }
 
     func webRTCManagerDidConnect(_ manager: WebRTCManager) {
