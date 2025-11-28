@@ -1,0 +1,4 @@
+module Shared {
+    header "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/Shared-Swift.h"
+    requires objc
+}

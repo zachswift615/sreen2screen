@@ -1,0 +1,23 @@
+{
+  "": {
+    "swift-dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/master.swiftdeps"
+  },
+  "/Users/zachswift/projects/screen2screen/Shared/Sources/Shared/Constants.swift": {
+    "dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/Constants.d",
+    "object": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/Constants.swift.o",
+    "swiftmodule": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/Constants~partial.swiftmodule",
+    "swift-dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/Constants.swiftdeps"
+  },
+  "/Users/zachswift/projects/screen2screen/Shared/Sources/Shared/InputMessage.swift": {
+    "dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/InputMessage.d",
+    "object": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/InputMessage.swift.o",
+    "swiftmodule": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/InputMessage~partial.swiftmodule",
+    "swift-dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/InputMessage.swiftdeps"
+  },
+  "/Users/zachswift/projects/screen2screen/Shared/Sources/Shared/SignalingMessage.swift": {
+    "dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/SignalingMessage.d",
+    "object": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/SignalingMessage.swift.o",
+    "swiftmodule": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/SignalingMessage~partial.swiftmodule",
+    "swift-dependencies": "/Users/zachswift/projects/screen2screen/Shared/.build/arm64-apple-macosx/debug/Shared.build/SignalingMessage.swiftdeps"
+  }
+}
